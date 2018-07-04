@@ -1,0 +1,284 @@
+<html>
+<head>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.3/angular.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.3/angular-route.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+  <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script>
+  //classes display function
+  function onl() {
+    $("#ctable tbody tr").remove();
+      $.ajax({ url : "http://localhost:1000/home", success : function(result) {
+        for(var x=0;x<result.length;x++) {
+            var temp="";
+            var temp1=result[x]['cid'];
+            var temp2="'"+result[x]['cname']+"'";
+            var temp3=result[x]['cname'];
+            temp +="<tr><td>"+temp1+"</td><td>"+temp3+"</td>";
+            temp +='<td><button class="btn btn-primary" onclick="stud(this)" data-cid='+temp1+' data-toggle="modal" data-target="#studinfomodal" >View</button></td>';
+            temp +='<td><button class="btn btn-info" onclick="modalvalues(this)" data-cid='+temp1+' data-cname='+temp2+' data-toggle="modal" data-target="#cupdatemodal">Update</button></td>';
+            temp +='<td><button class="btn btn-danger" onclick="deleterow(this,'+temp1+')">Delete</button></td></tr>';
+            $('#ctable').append(temp);
+        }
+      }});
+  }
+  //class updating function
+  function updaterows(name,cid) {
+    $.ajax({url : "http://localhost:1000/update?cid="+cid+"&cname="+name,
+    success : function(result) {
+      onl();
+    }});
+  }
+  //class update modal values-updating function
+  function modalvalues(x) {
+       var cid = $(x).data('cid');
+       var cname=$(x).data('cname');
+       $("#cumodal-body #cid1").val( cid );
+       $("#cumodal-body #name").val(cname);
+       $("#cumodal-body #cid").val( cid );
+  }
+  //class delete function
+  function deleterow(x,res) {
+    $.ajax({
+      url : "http://localhost:1000/delete?cid="+res,
+      success : function(result) {
+    }});
+    $('#ctable').on('click',x, function(){
+    $(x).closest ('tr').remove ();
+    });
+  }
+  //classes new record (ajax) function
+  function cnew(cname) {
+    $.ajax({url : "http://localhost:1000/add?cname="+cname,success : function (result) {
+      onl();
+    }});
+      console.log(cname);
+  }
+  //student modal display function
+  function stud(x) {
+    var temp=$(x).data("cid");
+    $("#stinmodal-body #saddbutton").data('cid',temp);
+    $("#sumodal-body #supdatebutton").data('cid',temp);
+    $("#stable tbody tr").remove();
+    $.ajax({url : "http://localhost:1000/shome?cid="+temp ,
+    success : function(result) {
+      for(var x=0;x<result.length;x++) {
+        var temp5="";
+        var temp1=result[x]['sid'];
+        var temp2="'"+result[x]['sname']+"'";
+        var temp3=result[x]['age'];
+        var temp4="'"+result[x]['class']+"'";
+        temp5 +='<tr><td>'+temp1+'</td><td>'+result[x]['sname']+'</td><td>'+temp3+'</td>';
+        temp5 +='<td><button class="btn btn-primary" data-toggle="modal" data-target="#studviewmodal" onclick="sview('+temp1+','+temp2+','+temp3+','+temp4+')">View</button></td>';
+        temp5 +='<td><button class="btn btn-info" data-toggle="modal" data-target="#supdatemodal" onclick="smodalvalues('+temp1+','+temp2+','+temp3+','+temp4+')">Update</button></td>';
+        temp5 +='<td><button class="btn btn-danger" onclick="deletestudrow(this,'+temp1+')">Delete</button></td>';
+        $("#stable").append(temp5);
+      }
+    }});
+  }
+  //student view function
+  function sview(sid,sname,age,sclass) {
+    var temp="sid : "+sid+"<br/>";
+    temp +="sname : "+sname+"<br/>";
+    temp +="age : "+age+"<br/>";
+    temp +="class : "+sclass+"<br/>";
+    $("#stvimodal-body #stviewp").html(temp);
+    console.log(sid+" "+sname+" "+age+" "+sclass);
+  }
+  //student values updating function
+  function supdaterows(x,sid,namevar,agevar,sclass) {
+    console.log($(x).data('cid')+" "+sid+" "+namevar+" "+agevar+" "+sclass);
+    $.ajax({url : "http://localhost:1000/supdate?sid="+sid+"&sname="+namevar+"&age="+agevar,
+    success :function(result) {
+      stud(x);
+    }});
+  }
+  //student update modal values-updating function
+  function smodalvalues(sid,sname,age,sclass) {
+    console.log(sid+" "+sname+" "+age+" "+sclass);
+    $("#sumodal-body #sid1").val(sid);
+    $("#sumodal-body #namevar").val(sname);
+    $("#sumodal-body #agevar").val(age);
+    $("#sumodal-body #sclass1").val(sclass);
+    $("#sumodal-body #sid").val(sid);
+    $("#sumodal-body #sclass").val(sclass);
+  }//sid1,name,age,sclass1,sid,sclass
+
+  //delete student record function
+  function deletestudrow(x,sid) {
+    $.ajax({url : "http://localhost:1000/deletestud?sid="+sid ,
+    success : function(result) {
+
+    }});
+    $('#stable').on('click',x, function(){
+    $(x).closest ('tr').remove ();
+    });
+  }
+  //student new record (ajax) function
+  function snew(x,sname,age,cvar) {
+    console.log("the value of cvar in snew function is"+cvar);
+    $.ajax({url : "http://localhost:1000/sadd?sname="+sname+"&age="+age+"&cid="+cvar,
+    success : function(result) {
+    }});
+    stud(x);
+  }
+  //student add modal values updating function
+  function addmodalvalues(x) {
+    var temp1=$(x).data("cid");
+    $("#samodal-body #cvar").val(temp1);
+    $("#samodal-body #addsubmitbutton").data('cid',temp1);
+  }
+  </script>
+</head>
+<body onload="onl()">
+  <br/>
+  <div class="container">
+    <button class='btn btn-primary' id='caddbutton' data-toggle='modal' data-target='#caddmodal'> Add Class</button><br/><br/>
+    <table class='table table-striped' id='ctable'>
+      <tfoot></tfoot>
+      <thead>
+        <tr><th>Cid</th><th>Cname</th><th>View</th><th>Update</th><th>Delete</th></tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+  <!-- Class Addition Modal -->
+  <div class="modal fade" id="caddmodal" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">New Class</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div id="amodal-body" class="modal-body">
+          Cname : <input type="text" id="cname" name="cname"/><br/><br/>
+          <button  data-dismiss="modal" onclick="cnew(document.getElementById('cname').value)">submit</button>
+        </div>
+        <div class="modal-footer">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Class Update Modal -->
+  <div class="modal fade" id="cupdatemodal" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Class Update</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div id="cumodal-body" class="modal-body">
+          Cid : <input type="number" id="cid1" name="cid1" disabled/><br/><br/>
+          Cname : <input type="text" id="name" name="name"/><br/><br/>
+          <input type="hidden" id="cid" name="cid"/><br/><br/>
+          <button data-dismiss="modal" onclick="updaterows(document.getElementById('name').value,document.getElementById('cid').value)">submit</button>
+        </div>
+        <div class="modal-footer">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Student Info Modal -->
+  <div class="modal fade" id="studinfomodal" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Student Details</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div id="stinmodal-body" class="modal-body">
+          <button class='btn btn-primary' id='saddbutton' data-cid="" onclick="addmodalvalues(this)" data-toggle='modal' data-target='#saddmodal'> Add Student</button><br/><br/>
+          <table class='table table-striped' id='stable'>
+            <tfoot></tfoot>
+            <thead>
+              <tr><th>Sid</th><th>Sname</th><th>Age</th><th>View</th><th>Update</th><th>Delete</th></tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
+          <button data-dismiss="modal">Okay</button>
+        </div>
+        <div class="modal-footer">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Student Addition Modal -->
+  <div class="modal fade" id="saddmodal" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">New Student</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div id="samodal-body" class="modal-body">
+          Sname : <input type="text" id="sname" name="sname"/><br/><br/>
+          Age : <input type="number" id="age" name="age"/><br/><br/>
+          <input type="hidden" id="cvar" name="cvar"/>
+          <button id="addsubmitbutton" data-cid="" data-dismiss="modal" onclick="snew(this,document.getElementById('sname').value,document.getElementById('age').value,document.getElementById('cvar').value)">submit</button>
+        </div>
+        <div class="modal-footer">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Student Update Modal -->
+  <div class="modal fade" id="supdatemodal" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Class Update</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div id="sumodal-body" class="modal-body">
+          Sid : <input type="number" id="sid1" name="sid1" disabled/><br/><br/>
+          Sname : <input type="text" id="namevar" name="namevar"/><br/><br/>
+          Age : <input type="number" id="agevar" name="agevar"/><br/><br/>
+          Class : <input type="text" id="sclass1" name="sclass1" disabled/><br/><br/>
+          <input type="hidden" id="sid" name="sid"/>
+          <input type="hidden" id="sclass" name="sclass"/>
+          <button id="supdatebutton" data-dismiss="modal" data-cid="" onclick="supdaterows(this,document.getElementById('sid').value,document.getElementById('namevar').value,document.getElementById('agevar').value,document.getElementById('sclass').value)">submit</button>
+        </div>
+        <div class="modal-footer">
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Student View Modal -->
+  <div class="modal fade" id="studviewmodal" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Student Details</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div id="stvimodal-body" class="modal-body">
+          <p id="stviewp"></p>
+          <button data-dismiss="modal">Okay</button>
+        </div>
+        <div class="modal-footer">
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

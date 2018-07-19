@@ -3,9 +3,9 @@ var mysql=require('mysql');
 var path=require('path');
 var app=express();
 var con=mysql.createConnection({
-  hostname : "testbed2.riktamtech.com",
-  user :"root",
-  password : "lkgukg",
+  hostname : "localhost",
+  user :"madhu",
+  password : "madhu",
   database : "mydb"
 });
 con.connect(function(error) {

@@ -3,9 +3,9 @@ var mysql=require('mysql');
 var path=require('path');
 var app=express();
 var con=mysql.createConnection({
-  hostname : "localhost",
-  user :"madhu",
-  password : "madhu",
+  hostname : "testbed2.riktamtech.com",
+  user :"root",
+  password : "lkgukg",
   database : "mydb"
 });
 con.connect(function(error) {
@@ -20,7 +20,8 @@ app.get("/", function(req, res) {
 app.get("/home", function(req, res) {
     con.query("select * from classes",function(error,rows,fields) {
       if(error) throw error;
-      res.send(rows);
+      var result = { "success" : "true","data" : rows};
+      res.send(result);
     });
     //res.send("welcome madhu");
 });
@@ -79,7 +80,8 @@ app.get('/shome',function(req,res) {
     console.log(temp2);
     con.query("select * from students where class='"+temp2+"'",function(error1,rows1,fields1) {
       if(error) throw error;
-      res.send(rows1);
+      var result = { "success" : "true", "data" : rows1};
+      res.send(result);
     });
   });
 });
